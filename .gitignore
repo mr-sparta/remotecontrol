@@ -1,0 +1,10 @@
+# Docker volumes et données
+.volumes/
+
+# Logs
+*.log
+
+# Fichiers temporaires
+*.tmp
+*.swp
+*~

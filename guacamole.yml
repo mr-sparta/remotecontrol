@@ -1,0 +1,48 @@
+services:
+    guacamole_db:
+        container_name: guacamole_db
+        hostname: guacamole_db
+        image: mariadb:10.11
+        restart: always
+        volumes:
+            - ./.volumes/guacamole_db:/var/lib/mysql
+        environment:
+            - MYSQL_ROOT_PASSWORD=R@guacroot
+            - MYSQL_DATABASE=guacamole_db
+            - MYSQL_USER=db_sparta_guac
+            - MYSQL_PASSWORD=d@spartaguac22
+        expose:
+            - 3306
+
+    guacd:
+        container_name: guacd
+        hostname: guacd
+        image: guacamole/guacd:latest
+        restart: always
+        volumes:
+            - ./.volumes/guacd_drive:/drive:rw
+            - ./.volumes/guacd_record:/record:rw
+        expose:
+            - 4822
+
+    guacamole:
+        container_name: guacamole
+        hostname: guacamole
+        restart: always
+        image: guacamole/guacamole:latest
+        depends_on:
+            - guacamole_db
+            - guacd
+        ports:
+            - 8081:8080    
+        volumes:
+            - ./.volumes/guacamole/ROOT.xml:/usr/local/tomcat/conf/Catalina/localhost/ROOT.xml:ro
+        links:
+            - guacd
+        environment:
+            - GUACD_HOSTNAME=guacd
+            - MYSQL_HOSTNAME=guacamole_db
+            - MYSQL_DATABASE=guacamole_db
+            - MYSQL_USER=db_sparta_guac
+            - MYSQL_PASSWORD=d@spartaguac22
+            - REMOTE_IP_VALVE_ENABLED=true
